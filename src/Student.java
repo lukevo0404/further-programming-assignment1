@@ -5,12 +5,7 @@ public class Student {
     private Date birthdate;
     private String name;
 
-    public Student() {
-        super();
-    }
-
     public Student(String id, Date birthdate, String name ) {
-        super();
         this.id = id;
         this.birthdate = birthdate;
         this.name = name;
