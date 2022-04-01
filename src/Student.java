@@ -1,3 +1,4 @@
+import java.util.Calendar;
 import java.util.Date;
 
 public class Student {
@@ -5,9 +6,21 @@ public class Student {
     private Date birthdate;
     private String name;
 
-    public Student(String id, Date birthdate, String name ) {
+    public Student(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(1998, 1, 1);
+
+        this.id = "default";
+        this.birthdate = cal.getTime();
+        this.name = "default";
+    }
+
+    public Student(String id, int year, int month, int date, String name ) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, date);
+        this.birthdate = cal.getTime();
+
         this.id = id;
-        this.birthdate = birthdate;
         this.name = name;
     }
 
@@ -15,28 +28,28 @@ public class Student {
         return id;
     }
 
-    public Date getBirthdate() {
-        return birthdate;
+    public String getBirthdate() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(birthdate);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int date = cal.get(Calendar.DATE);
+        return date + "/" + month + "/" + year;
     }
 
     public String getName(){
         return name;
     }
 
-    public void setId(String id){
-        this.id = id;
-    }
-
-    public void setBirthdate(Date birthdate) {
-        this.birthdate = birthdate;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public String toString() {
-        return "Student [id: " + id + ", birthdate: " + birthdate + ", name:" + name + "]";
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(birthdate);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int date = cal.get(Calendar.DATE);
+
+        return
+                "Student [id: " + id + ", " + "name: " + name + getBirthdate()+ "]";
     }
 }
