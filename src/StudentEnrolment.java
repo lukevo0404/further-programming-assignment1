@@ -35,11 +35,23 @@ public class StudentEnrolment {
         return semester;
     }
 
+    public void setStudent(Student student){
+        this.student = student;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public void setSemester(String semester) {
+        this.semester = semester;
+    }
+
     @Override
     public String toString() {
 
         return
-                getStudentId() + " " + getStudentName() + " " + getStudentBirthday() +
-                getCourseId() + " " + getCourseName() + " " + getCourseCredit() + semester;
+                getStudentId() + " " + getStudentName() + " " + getStudentBirthday() + " " +
+                getCourseId() + " " + getCourseName() + " " + getCourseCredit() + " " + semester;
     }
 }
