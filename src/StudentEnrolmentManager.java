@@ -35,21 +35,11 @@ public interface StudentEnrolmentManager {
         System.out.println("Successfully remove enrolment");
     }
 
-    ;
-
-    static void getOne(int enrolmentPosition) {
-        System.out.println("-----------------------------------------------");
-        System.out.println(enrolments.get(enrolmentPosition));
-        System.out.println("-----------------------------------------------");
+    static StudentEnrolment getOne(int enrolmentPosition) {
+        return enrolments.get(enrolmentPosition);
     }
 
-    ;
-
-    static void getAll() {
-        System.out.println("-----------------------------------------------");
-        for (StudentEnrolment enrolment : enrolments) {
-            System.out.println(enrolment);
-        }
-        System.out.println("-----------------------------------------------");
+    static ArrayList<StudentEnrolment> getAll() {
+        return enrolments;
     }
 }
