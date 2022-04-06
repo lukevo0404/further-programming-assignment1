@@ -51,7 +51,7 @@ public class StudentEnrolment {
     public String toString() {
 
         return
-                getStudentId() + " " + getStudentName() + " " + getStudentBirthday() + " " +
-                getCourseId() + " " + getCourseName() + " " + getCourseCredit() + " " + semester;
+                getStudentId() + "," + getStudentName() + "," + getStudentBirthday() + "," +
+                getCourseId() + "," + getCourseName() + "," + getCourseCredit() + "," + semester;
     }
 }

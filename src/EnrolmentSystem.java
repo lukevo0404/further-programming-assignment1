@@ -11,6 +11,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
     static ArrayList<StudentEnrolment> enrolments = StudentEnrolmentManager.getAll();
     static ArrayList<Integer> matchedStudentIdAndSemester = new ArrayList<>();
     static boolean updateMenu = false;
+    static ArrayList<StudentEnrolment> displayEnrolments = new ArrayList<>();
 
 
     //    public void studentEnrolmentSearch() {
@@ -71,6 +72,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
     public static void showEnrolment(ArrayList<Integer> list) {
         for (Integer i : list) {
             System.out.println(enrolments.get(i));
+            displayEnrolments.add((enrolments).get(i));
         }
     }
 
@@ -356,6 +358,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                             }
                             export.flush();
                             export.close();
+                            System.out.println(semester + ".csv is saved in root folder");
                         }
 
                     } else {
@@ -409,6 +412,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                             System.out.println("Enter number from the menu");
                             System.out.println("1: Enrol A New Course");
                             System.out.println("2: Delete a course");
+                            System.out.println("3: Export records into a CSV file");
                             System.out.println("0: Exit");
                             menuUpdate = Integer.parseInt(scanner.nextLine());
                             switch (menuUpdate) {
@@ -454,6 +458,16 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                                         System.out.println(searchStudent(currentStudentId).getName() + "(" + currentStudentId + ") is not enrolled in " + courseId + " for semester " + currentSemester);
                                     }
                                     break;
+                                case 3:
+                                    String fileName3 =  searchStudent(currentStudentId).getName() + "(" + currentStudentId + ") " + currentSemester + ".csv";
+                                    FileWriter export = new FileWriter(fileName3);
+                                    for (StudentEnrolment enrolment : displayEnrolments){
+                                        export.append(enrolment.toString());
+                                        export.append('\n');
+                                    }
+                                    export.flush();
+                                    export.close();
+                                    System.out.println(fileName3 + " is saved in root folder");
                             }
 
                         } while (menuUpdate != 0);
