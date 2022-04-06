@@ -3,6 +3,7 @@ import java.util.Date;
 
 public class Student {
     private String id;
+    int unqiue;
     private Date birthdate;
     private String name;
 
@@ -22,6 +23,7 @@ public class Student {
 
         this.id = id;
         this.name = name;
+        this.unqiue = Integer.parseInt(id.replaceAll("[^\\d.]", ""));
     }
 
     public String getId(){
@@ -42,6 +44,25 @@ public class Student {
     }
 
     @Override
+    public int hashCode() {
+        return unqiue;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Student other = (Student) obj;
+        if (unqiue != other.unqiue)
+            return false;
+        return true;
+    }
+
+    @Override
     public String toString() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(birthdate);
@@ -50,6 +71,6 @@ public class Student {
         int date = cal.get(Calendar.DATE);
 
         return
-                "Student [id: " + id + ", " + "name: " + name + getBirthdate()+ "]";
+                "Student [id: " + id + ", name: " + name + ", birthdate: " + getBirthdate()+ "]";
     }
 }

@@ -1,13 +1,11 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class EnrolmentSystem implements StudentEnrolmentManager {
 
     static Scanner scanner = new Scanner(System.in);
-    static ArrayList<Student> students = new ArrayList<>();
-    static ArrayList<Course> courses = new ArrayList<>();
+    static Set<Student> students = new HashSet<> ();
+    static Set<Course> courses = new HashSet<> ();
     static String currentStudentId;
     static String currentSemester;
     static ArrayList<StudentEnrolment> enrolments = StudentEnrolmentManager.getAll();
@@ -17,7 +15,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
 
     //    public void studentEnrolmentSearch() {
 //
-//        System.out.println("Enter student id");
+//        System.out.println("Enter student id:");
 //        String studentId = scanner.nextLine();
 //        ArrayList<Integer> matchedStudents = new ArrayList<>();
 //
@@ -30,7 +28,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
 //
 //        if (validStudentId) {
 //
-//            System.out.println("Enter course id");
+//            System.out.println("Enter course id:");
 //            String courseId = scanner.nextLine();
 //
 //            ArrayList<Integer> matchedCourses = new ArrayList<>();
@@ -43,7 +41,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
 //            boolean validCourseId = (matchedCourses.size() != 0);
 //
 //            if (validCourseId) {
-//                System.out.println("Enter semester");
+//                System.out.println("Enter semester:");
 //                String semester = scanner.nextLine();
 //
 //                ArrayList<Integer> matchedStudentIdAndSemester = new ArrayList<>();
@@ -79,10 +77,10 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
     public static void studentEnrolmentSearch(String sId, String sem) {
         String studentId;
         String semester;
-        if (sId == null){
-            System.out.println("Enter student id");
+        if (sId == null) {
+            System.out.println("Enter student id:");
             studentId = scanner.nextLine();
-        }else{
+        } else {
             studentId = sId;
         }
 
@@ -98,10 +96,10 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
         if (validStudentId) {
             currentStudentId = studentId;
 
-            if (sId == null){
-                System.out.println("Enter semester");
+            if (sId == null) {
+                System.out.println("Enter semester:");
                 semester = scanner.nextLine();
-            }else{
+            } else {
                 semester = sem;
             }
 
@@ -152,29 +150,88 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+
         //INITIALIZATION
-        try (BufferedReader br = new BufferedReader(new FileReader("default.csv"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
-                System.out.println(values);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        String fileName = "default.csv";
+        System.out.println("Do you have your enrolment .csv file in the root folder? (Y/N)");
+        String input = scanner.nextLine();
+        boolean fileNameInput = false;
+
+        if (Objects.equals(input, "Y") || Objects.equals(input, "y")){
+            do{
+                System.out.println("Type the file name:");
+                fileName = scanner.nextLine();
+                if(new File(fileName).isFile()){
+                    System.out.println("Enrolments from " + fileName + " will be imported...");
+                    fileNameInput = true;
+                }else{
+                    System.out.println("The file " + fileName + " doesn't exist in root folder");
+                    System.out.println("Do you want to retype the file name? If not, the default enrolments will be imported. (Y/N)");
+                    String input2 = scanner.nextLine();
+                    if (Objects.equals(input2, "Y") || Objects.equals(input2, "y")){
+                        fileNameInput = false;
+                    }else if (Objects.equals(input2, "N") || Objects.equals(input2, "n")){
+                        fileNameInput = true;
+                        fileName = "default.csv";
+                    }
+                }
+            }while(fileNameInput== false);
+
+        } else if (Objects.equals(input, "n") || Objects.equals(input, "N")){
+            fileName = "default.csv";
+            System.out.println("The default enrolments will be imported...");
         }
-        students.add(new Student("s1111", 2002, 4, 4, "Nguyen"));
-        students.add(new Student("s2222", 1998, 1, 2, "Huy"));
 
-        courses.add(new Course("C1", "Course 1", 1));
-        courses.add(new Course("C2", "Course 2", 3));
-        courses.add(new Course("C3", "Course 3", 2));
-        courses.add(new Course("C4", "Course 4", 4));
+        Scanner sc = new Scanner(new File(fileName));
+        sc.useDelimiter(",");
+        ArrayList<String> rows = new ArrayList<>();
 
-        enrolments.add(new StudentEnrolment(students.get(0), courses.get(0), "2020A"));
-        enrolments.add(new StudentEnrolment(students.get(0), courses.get(1), "2020A"));
-        enrolments.add(new StudentEnrolment(students.get(0), courses.get(2), "2020A"));
-        enrolments.add(new StudentEnrolment(students.get(0), courses.get(3), "2020C"));
+        while (sc.hasNext()) {
+            rows.add(sc.nextLine());
+        }
+        for (int row = 0; row < rows.size(); row++) {
+            int col = 0;
+            String fullRow = rows.get(row);
+            String[] cell = fullRow.split(",");
+            while (col < 7) {
+                String studentId = cell[col];
+                col++;
+                String name = cell[col];
+                col++;
+                String birthdate = cell[col];
+                col++;
+                String[] birtdateParts = birthdate.split("/");
+                int month = Integer.parseInt(birtdateParts[0]);
+                int day = Integer.parseInt(birtdateParts[1]);
+                int year = Integer.parseInt(birtdateParts[2]);
+                Student newStudent = new Student(studentId, year, month,day, name);
+                students.add(newStudent);
+
+                String courseId = cell[col];
+                col++;
+                String courseName = cell[col];
+                col++;
+                int credit = Integer.parseInt(cell[col]);
+                col++;
+                Course newCourse = new Course(courseId,courseName,credit);
+                courses.add(newCourse);
+
+                String semester = cell[col];
+                col++;
+                enrolments.add(new StudentEnrolment(searchStudent(studentId), searchCourse(courseId), semester));
+            }
+        }
+        System.out.println("All enrolments are imported:");
+
+        for (Student student : students) {
+            System.out.println(student);
+        }
+        for (Course course : courses) {
+            System.out.println(course);
+        }
+
+        showAllEnrolment();
 
         int menuInput;
 
@@ -182,39 +239,105 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
             //DISPLAY
             System.out.println("---------------------------");
             System.out.println("Enter number from the menu");
-            System.out.println("1: Show All Enrolments");
-            System.out.println("2: Enrol A Student");
-            System.out.println("3: Update Student Enrolment");
-
+            System.out.println("1: Show All Students In A Course");
+            System.out.println("2: Show All Courses Offered In A Semester");
+            System.out.println("3: Enrol A Student");
+            System.out.println("4: Update Student Enrolment");
             System.out.println("0: Exit");
-            menuInput = Integer.parseInt(scanner.nextLine());
+            menuInput = Integer.
+                    parseInt(scanner.nextLine());
 
             switch (menuInput) {
                 case 1:
                     System.out.println("--------------");
-                    System.out.println("ALL ENROLMENTS");
-                    showAllEnrolment();
-                    break;
+                    System.out.println("ALL STUDENTS IN A COURSE");
 
+                    System.out.println("Enter course id:");
+                    String course6 = scanner.nextLine();
+
+                    ArrayList<Integer> matchedCourse = new ArrayList<>();
+
+                    for (int i = 0; i < enrolments.size(); i++) {
+                        if (Objects.equals(enrolments.get(i).getCourseId(), course6)) {
+                            matchedCourse.add(i);
+                        }
+                    }
+
+                    boolean validCourse = (matchedCourse.size() != 0);
+                    if (validCourse) {
+                        Set<String> displayStudentIds = new HashSet<>();
+
+                        for(int i = 0; i < matchedCourse.size(); i++){
+                            displayStudentIds.add(enrolments.get(matchedCourse.get(i)).getStudentId());
+                        }
+                        ArrayList<Student> displayStudent = new ArrayList<>();
+
+
+                        for(String displayStudentId : displayStudentIds){
+                            displayStudent.add(searchStudent(displayStudentId));
+                        }
+                        for(int i = 0 ; i < displayStudent.size(); i++){
+                            System.out.println(displayStudent.get(i));
+                        }
+                    } else {
+                        System.out.println("Course " + course6 + " doesn't exist");
+                    }
+                    break;
                 case 2:
+                    System.out.println("--------------");
+                    System.out.println("ALL COURSES OFFERED IN A SEMESTER");
+                    System.out.println("--------------");
+
+                    System.out.println("Enter a semester:");
+                    String semester = scanner.nextLine();
+
+                    ArrayList<Integer> matchedSemester = new ArrayList<>();
+
+                    for (int i = 0; i < enrolments.size(); i++) {
+                        if (Objects.equals(enrolments.get(i).getSemester(), semester)) {
+                            matchedSemester.add(i);
+                        }
+                    }
+
+                    boolean validSemester = (matchedSemester.size() != 0);
+                    if (validSemester) {
+                        Set<String> displayCourseIds = new HashSet<>();
+
+                        for(int i = 0; i < matchedSemester.size(); i++){
+                            displayCourseIds.add(enrolments.get(matchedSemester.get(i)).getCourseId());
+                        }
+                        ArrayList<Course> displayCourse = new ArrayList<>();
+
+
+                        for(String displayCourseId : displayCourseIds){
+                            displayCourse.add(searchCourse(displayCourseId));
+                        }
+                        for(int i = 0 ; i < displayCourse.size(); i++){
+                            System.out.println(displayCourse.get(i));
+                        }
+                    } else {
+                        System.out.println("Semester " + semester + " doesn't exist");
+                    }
+                    break;
+                case 3:
                     System.out.println("--------------");
                     System.out.println("ADD ENROLMENT");
                     System.out.println("--------------");
 
-                    System.out.println("Enter student id");
+                    System.out.println("Enter student id:");
                     String studentId2 = scanner.nextLine();
                     Student chosenStudent2 = searchStudent(studentId2);
 
                     boolean validStudentId2 = (chosenStudent2 != null);
                     if (validStudentId2) {
 
-                        System.out.println("Enter course id");
+                        System.out.println("Enter course id:");
                         String courseId2 = scanner.nextLine();
                         Course chosenCourse2 = searchCourse(courseId2);
                         boolean validCourseId2 = (chosenCourse2 != null);
                         if (validCourseId2) {
 
-                            System.out.println("Enter semester");
+                            System.out.println("Enter semester:");
                             String semester2 = scanner.nextLine();
                             StudentEnrolmentManager.add(chosenStudent2, chosenCourse2, semester2);
                         } else {
@@ -226,13 +349,13 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                     }
                     break;
 
-                case 3:
+                case 4:
                     System.out.println("--------------");
                     System.out.println("UPDATE STUDENT ENROLMENT");
                     System.out.println("--------------");
-                    studentEnrolmentSearch(null,null);
+                    studentEnrolmentSearch(null, null);
                     int menuUpdate = 0;
-                    if(updateMenu){
+                    if (updateMenu) {
                         do {
                             studentEnrolmentSearch(currentStudentId, currentSemester);
                             System.out.println("-----------------------------------------------");
@@ -252,7 +375,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                                     boolean validStudentId3 = (chosenStudent3 != null);
                                     if (validStudentId3) {
 
-                                        System.out.println("Enter course id");
+                                        System.out.println("Enter course id:");
                                         String courseId3 = scanner.nextLine();
                                         Course chosenCourse3 = searchCourse(courseId3);
                                         boolean validCourseId3 = (chosenCourse3 != null);
@@ -267,7 +390,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                                     }
                                     break;
                                 case 2:
-                                    System.out.println("Enter course id");
+                                    System.out.println("Enter course id:");
                                     String courseId = scanner.nextLine();
 
                                     ArrayList<Integer> matchedAll = new ArrayList<>();
@@ -277,9 +400,9 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                                             matchedAll.add(matchedStudentIdAndSemester.get(i));
                                         }
                                     }
-                                    boolean validCourse = (matchedAll.size() != 0);
+                                    boolean validCourse2 = (matchedAll.size() != 0);
 
-                                    if (validCourse) {
+                                    if (validCourse2) {
                                         if (matchedAll.size() != 0) {
                                             StudentEnrolmentManager.delete(matchedAll.get(0));
                                         }
@@ -298,15 +421,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                     }
 
 
-
-
                     break;
-
-                case 4:
-                    System.out.println("--------------");
-                    System.out.println("UPDATE ENROLMENT");
-                    System.out.println("--------------");
-
             }
 
         } while (menuInput != 0);
