@@ -150,7 +150,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
         }
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         //INITIALIZATION
         String fileName = "default.csv";
@@ -239,7 +239,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
             //DISPLAY
             System.out.println("---------------------------");
             System.out.println("Enter number from the menu");
-            System.out.println("1: Show All Students In A Course");
+            System.out.println("1: Show All Students Of A Course In A Semester");
             System.out.println("2: Show All Courses Offered In A Semester");
             System.out.println("3: Enrol A Student");
             System.out.println("4: Update Student Enrolment");
@@ -265,20 +265,51 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
 
                     boolean validCourse = (matchedCourse.size() != 0);
                     if (validCourse) {
-                        Set<String> displayStudentIds = new HashSet<>();
+                        System.out.println("Enter semester:");
+                        String semester = scanner.nextLine();
 
-                        for(int i = 0; i < matchedCourse.size(); i++){
-                            displayStudentIds.add(enrolments.get(matchedCourse.get(i)).getStudentId());
+                        ArrayList<Integer> matchedCourseAndSemester = new ArrayList<>();
+
+                        for (int i = 0; i < matchedCourse.size(); i++) {
+                            if (Objects.equals(enrolments.get(matchedCourse.get(i)).getSemester(), semester)) {
+                                matchedCourseAndSemester.add(i);
+                            }
                         }
-                        ArrayList<Student> displayStudent = new ArrayList<>();
+
+                        boolean validSemester = (matchedCourseAndSemester.size() != 0);
+                        if (validCourse) {
+                            Set<String> displayStudentIds = new HashSet<>();
+
+                            for(int i = 0; i < matchedCourseAndSemester.size(); i++){
+                                displayStudentIds.add(enrolments.get(matchedCourseAndSemester.get(i)).getStudentId());
+                            }
+                            ArrayList<Student> displayStudent = new ArrayList<>();
 
 
-                        for(String displayStudentId : displayStudentIds){
-                            displayStudent.add(searchStudent(displayStudentId));
+                            for(String displayStudentId : displayStudentIds){
+                                displayStudent.add(searchStudent(displayStudentId));
+                            }
+                            for(int i = 0 ; i < displayStudent.size(); i++){
+                                System.out.println(displayStudent.get(i));
+                            }
+                            System.out.println("Do you want to export these into a CSV file? (Y/N)");
+                            String input2 = scanner.nextLine();
+                            if (Objects.equals(input2, "Y") || Objects.equals(input2, "y")){
+                                FileWriter export = new FileWriter(
+                                        searchCourse(course6).getName() + " "
+                                        + searchCourse(course6).getId() + " " + semester + ".csv"
+                                        );
+                                for (Student student : displayStudent){
+                                    export.append(student.getName() + "," + student.getId() + "," + student.getBirthdate());
+                                    export.append('\n');
+                                }
+                                export.flush();
+                                export.close();
+                            }
+                        }else{
+                            System.out.println("Semester " + semester + " doesn't exist");
                         }
-                        for(int i = 0 ; i < displayStudent.size(); i++){
-                            System.out.println(displayStudent.get(i));
-                        }
+
                     } else {
                         System.out.println("Course " + course6 + " doesn't exist");
                     }
@@ -315,6 +346,18 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                         for(int i = 0 ; i < displayCourse.size(); i++){
                             System.out.println(displayCourse.get(i));
                         }
+                        System.out.println("Do you want to export these into a CSV file? (Y/N)");
+                        String input2 = scanner.nextLine();
+                        if (Objects.equals(input2, "Y") || Objects.equals(input2, "y")){
+                            FileWriter export = new FileWriter(semester + ".csv");
+                            for (Course course : displayCourse){
+                                export.append(course.getName() + "," + course.getId() + "," + course.getCredit());
+                                export.append('\n');
+                            }
+                            export.flush();
+                            export.close();
+                        }
+
                     } else {
                         System.out.println("Semester " + semester + " doesn't exist");
                     }
