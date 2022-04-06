@@ -14,61 +14,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
     static ArrayList<StudentEnrolment> displayEnrolments = new ArrayList<>();
 
 
-    //    public void studentEnrolmentSearch() {
-//
-//        System.out.println("Enter student id:");
-//        String studentId = scanner.nextLine();
-//        ArrayList<Integer> matchedStudents = new ArrayList<>();
-//
-//        for (int i = 0; i < enrolments.size(); i++) {
-//            if (Objects.equals(enrolments.get(i).getStudentId(), studentId)) {
-//                matchedStudents.add(i);
-//            }
-//        }
-//        boolean validStudentId = (matchedStudents.size() != 0);
-//
-//        if (validStudentId) {
-//
-//            System.out.println("Enter course id:");
-//            String courseId = scanner.nextLine();
-//
-//            ArrayList<Integer> matchedCourses = new ArrayList<>();
-//
-//            for (int i = 0; i < matchedStudents.size(); i++) {
-//                if (Objects.equals(enrolments.get(matchedStudents.get(i)).getCourseId(), courseId)) {
-//                    matchedCourses.add(matchedStudents.get(i));
-//                }
-//            }
-//            boolean validCourseId = (matchedCourses.size() != 0);
-//
-//            if (validCourseId) {
-//                System.out.println("Enter semester:");
-//                String semester = scanner.nextLine();
-//
-//                ArrayList<Integer> matchedStudentIdAndSemester = new ArrayList<>();
-//
-//                for (int i = 0; i < matchedCourses.size(); i++) {
-//                    if (Objects.equals(enrolments.get(matchedCourses.get(i)).getSemester(), semester)) {
-//                        matchedStudentIdAndSemester.add(matchedCourses.get(i));
-//                    }
-//                }
-//                boolean validSemester = (matchedStudentIdAndSemester.size() != 0);
-//
-//                if (validSemester){
-//                    matchedStudentIdAndSemester.get(0);
-//                }else{
-//                    System.out.println(searchStudent(studentId).getName() + "(" + studentId + ") is not enrolled in " +
-//                            searchCourse(courseId).getName() + "(" + courseId + ") for semester " + semester);
-//                }
-//
-//            } else {
-//                System.out.println(searchStudent(studentId).getName() + "(" + studentId + ") is not enrolled in " + courseId);
-//            }
-//
-//        } else {
-//            System.out.println("There is no enrolment with that Student ID");
-//        }
-//    }
+
     public static void showEnrolment(ArrayList<Integer> list) {
         for (Integer i : list) {
             System.out.println(enrolments.get(i));
@@ -106,9 +52,9 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
             }
 
 
-            for (int i = 0; i < matchedStudents.size(); i++) {
-                if (Objects.equals(enrolments.get(matchedStudents.get(i)).getSemester(), semester)) {
-                    matchedStudentIdAndSemester.add(matchedStudents.get(i));
+            for (Integer matchedStudent : matchedStudents) {
+                if (Objects.equals(enrolments.get(matchedStudent).getSemester(), semester)) {
+                    matchedStudentIdAndSemester.add(matchedStudent);
                 }
             }
             boolean validSemester = (matchedStudentIdAndSemester != null);
@@ -118,7 +64,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                 updateMenu = true;
 
             } else {
-                System.out.println(searchStudent(currentStudentId).getName() + "(" + currentStudentId + ") is not enrolled for semester " + currentSemester);
+                System.out.println(Objects.requireNonNull(searchStudent(currentStudentId)).getName() + "(" + currentStudentId + ") is not enrolled for semester " + currentSemester);
                 updateMenu = false;
             }
 
@@ -171,14 +117,12 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                     System.out.println("The file " + fileName + " doesn't exist in root folder");
                     System.out.println("Do you want to retype the file name? If not, the default enrolments will be imported. (Y/N)");
                     String input2 = scanner.nextLine();
-                    if (Objects.equals(input2, "Y") || Objects.equals(input2, "y")){
-                        fileNameInput = false;
-                    }else if (Objects.equals(input2, "N") || Objects.equals(input2, "n")){
+                    if (Objects.equals(input2, "N") || Objects.equals(input2, "n")){
                         fileNameInput = true;
                         fileName = "default.csv";
                     }
                 }
-            }while(fileNameInput== false);
+            }while(!fileNameInput);
 
         } else if (Objects.equals(input, "n") || Objects.equals(input, "N")){
             fileName = "default.csv";
@@ -192,10 +136,9 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
         while (sc.hasNext()) {
             rows.add(sc.nextLine());
         }
-        for (int row = 0; row < rows.size(); row++) {
+        for (String s : rows) {
             int col = 0;
-            String fullRow = rows.get(row);
-            String[] cell = fullRow.split(",");
+            String[] cell = s.split(",");
             while (col < 7) {
                 String studentId = cell[col];
                 col++;
@@ -203,11 +146,11 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                 col++;
                 String birthdate = cell[col];
                 col++;
-                String[] birtdateParts = birthdate.split("/");
-                int month = Integer.parseInt(birtdateParts[0]);
-                int day = Integer.parseInt(birtdateParts[1]);
-                int year = Integer.parseInt(birtdateParts[2]);
-                Student newStudent = new Student(studentId, year, month,day, name);
+                String[] birthdateParts = birthdate.split("/");
+                int month = Integer.parseInt(birthdateParts[0]);
+                int day = Integer.parseInt(birthdateParts[1]);
+                int year = Integer.parseInt(birthdateParts[2]);
+                Student newStudent = new Student(studentId, year, month, day, name);
                 students.add(newStudent);
 
                 String courseId = cell[col];
@@ -216,7 +159,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                 col++;
                 int credit = Integer.parseInt(cell[col]);
                 col++;
-                Course newCourse = new Course(courseId,courseName,credit);
+                Course newCourse = new Course(courseId, courseName, credit);
                 courses.add(newCourse);
 
                 String semester = cell[col];
@@ -279,11 +222,11 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                         }
 
                         boolean validSemester = (matchedCourseAndSemester.size() != 0);
-                        if (validCourse) {
+                        if (validSemester) {
                             Set<String> displayStudentIds = new HashSet<>();
 
-                            for(int i = 0; i < matchedCourseAndSemester.size(); i++){
-                                displayStudentIds.add(enrolments.get(matchedCourseAndSemester.get(i)).getStudentId());
+                            for (Integer integer : matchedCourseAndSemester) {
+                                displayStudentIds.add(enrolments.get(integer).getStudentId());
                             }
                             ArrayList<Student> displayStudent = new ArrayList<>();
 
@@ -291,22 +234,23 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                             for(String displayStudentId : displayStudentIds){
                                 displayStudent.add(searchStudent(displayStudentId));
                             }
-                            for(int i = 0 ; i < displayStudent.size(); i++){
-                                System.out.println(displayStudent.get(i));
+                            for (Student value : displayStudent) {
+                                System.out.println(value);
                             }
                             System.out.println("Do you want to export these into a CSV file? (Y/N)");
                             String input2 = scanner.nextLine();
                             if (Objects.equals(input2, "Y") || Objects.equals(input2, "y")){
-                                FileWriter export = new FileWriter(
-                                        searchCourse(course6).getName() + " "
-                                        + searchCourse(course6).getId() + " " + semester + ".csv"
-                                        );
+                                String fileName1 =
+                                        Objects.requireNonNull(searchCourse(course6)).getName() + " "
+                                                + Objects.requireNonNull(searchCourse(course6)).getId() + " " + semester + ".csv";
+                                FileWriter export = new FileWriter(fileName1);
                                 for (Student student : displayStudent){
                                     export.append(student.getName() + "," + student.getId() + "," + student.getBirthdate());
                                     export.append('\n');
                                 }
                                 export.flush();
                                 export.close();
+                                System.out.println(fileName1 + " is saved in root folder");
                             }
                         }else{
                             System.out.println("Semester " + semester + " doesn't exist");
@@ -336,8 +280,8 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                     if (validSemester) {
                         Set<String> displayCourseIds = new HashSet<>();
 
-                        for(int i = 0; i < matchedSemester.size(); i++){
-                            displayCourseIds.add(enrolments.get(matchedSemester.get(i)).getCourseId());
+                        for (Integer integer : matchedSemester) {
+                            displayCourseIds.add(enrolments.get(integer).getCourseId());
                         }
                         ArrayList<Course> displayCourse = new ArrayList<>();
 
@@ -345,8 +289,8 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                         for(String displayCourseId : displayCourseIds){
                             displayCourse.add(searchCourse(displayCourseId));
                         }
-                        for(int i = 0 ; i < displayCourse.size(); i++){
-                            System.out.println(displayCourse.get(i));
+                        for (Course course : displayCourse) {
+                            System.out.println(course);
                         }
                         System.out.println("Do you want to export these into a CSV file? (Y/N)");
                         String input2 = scanner.nextLine();
@@ -400,12 +344,12 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
                     System.out.println("UPDATE STUDENT ENROLMENT");
                     System.out.println("--------------");
                     studentEnrolmentSearch(null, null);
-                    int menuUpdate = 0;
+                    int menuUpdate;
                     if (updateMenu) {
                         do {
                             studentEnrolmentSearch(currentStudentId, currentSemester);
                             System.out.println("-----------------------------------------------");
-                            System.out.println("All Courses " + searchStudent(currentStudentId).getName() + "(" + currentStudentId + ") enrolled in semester " + currentSemester);
+                            System.out.println("All Courses " + Objects.requireNonNull(searchStudent(currentStudentId)).getName() + "(" + currentStudentId + ") enrolled in semester " + currentSemester);
                             System.out.println("             --------------------              ");
                             showEnrolment(matchedStudentIdAndSemester);
                             System.out.println("-----------------------------------------------");
@@ -442,24 +386,24 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
 
                                     ArrayList<Integer> matchedAll = new ArrayList<>();
 
-                                    for (int i = 0; i < matchedStudentIdAndSemester.size(); i++) {
-                                        if (Objects.equals(enrolments.get(matchedStudentIdAndSemester.get(i)).getCourseId(), courseId)) {
-                                            matchedAll.add(matchedStudentIdAndSemester.get(i));
+                                    for (Integer integer : matchedStudentIdAndSemester) {
+                                        if (Objects.equals(enrolments.get(integer).getCourseId(), courseId)) {
+                                            matchedAll.add(integer);
                                         }
                                     }
                                     boolean validCourse2 = (matchedAll.size() != 0);
 
                                     if (validCourse2) {
-                                        if (matchedAll.size() != 0) {
+                                        if (matchedAll != null) {
                                             StudentEnrolmentManager.delete(matchedAll.get(0));
                                         }
 
                                     } else {
-                                        System.out.println(searchStudent(currentStudentId).getName() + "(" + currentStudentId + ") is not enrolled in " + courseId + " for semester " + currentSemester);
+                                        System.out.println(Objects.requireNonNull(searchStudent(currentStudentId)).getName() + "(" + currentStudentId + ") is not enrolled in " + courseId + " for semester " + currentSemester);
                                     }
                                     break;
                                 case 3:
-                                    String fileName3 =  searchStudent(currentStudentId).getName() + "(" + currentStudentId + ") " + currentSemester + ".csv";
+                                    String fileName3 =  Objects.requireNonNull(searchStudent(currentStudentId)).getName() + "(" + currentStudentId + ") " + currentSemester + ".csv";
                                     FileWriter export = new FileWriter(fileName3);
                                     for (StudentEnrolment enrolment : displayEnrolments){
                                         export.append(enrolment.toString());
@@ -472,9 +416,7 @@ public class EnrolmentSystem implements StudentEnrolmentManager {
 
                         } while (menuUpdate != 0);
 
-                        if (menuUpdate == 0) {
-                            updateMenu = false;
-                        }
+                        updateMenu = false;
                     }
 
 
